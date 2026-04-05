@@ -1,0 +1,45 @@
+{
+  "name": "mfp-cli",
+  "version": "1.0.0",
+  "description": "Unofficial MyFitnessPal CLI for accessing your diary data, weight logs, and nutrition summaries",
+  "main": "dist/index.js",
+  "bin": {
+    "mfp": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "npx ts-node src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "myfitnesspal",
+    "fitness",
+    "nutrition",
+    "cli",
+    "diet",
+    "calories"
+  ],
+  "author": "MFP CLI",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "chalk": "^4.1.2",
+    "cheerio": "^1.2.0",
+    "cli-table3": "^0.6.3",
+    "commander": "^11.1.0",
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^20.19.39",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "eslint": "^8.55.0",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "5.9.3"
+  }
+}
