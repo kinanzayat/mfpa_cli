@@ -47,17 +47,17 @@ export class MFPApiClient {
   }
 
   /**
-   * Get diary data for a date range
+   * Get diary data for a date or date range
+   * For single dates, use entry_date param (from/to doesn't work reliably for single days)
    */
   async getDiary(fromDate: string, toDate?: string): Promise<DiaryResponse> {
     const params: Record<string, string> = {};
     
-    if (toDate) {
+    if (toDate && toDate !== fromDate) {
       params.from = fromDate;
       params.to = toDate;
     } else {
-      params.from = fromDate;
-      params.to = fromDate;
+      params.entry_date = fromDate;
     }
 
     return this.apiRequest<DiaryResponse>('/v2/diary', params);
