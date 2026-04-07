@@ -137,3 +137,10 @@ export interface DiaryData {
   goals: DiaryGoals;
   remaining: Omit<FoodEntryRow, 'id' | 'name'>;
 }
+
+export interface DiaryHistoryEntry {
+  date: string;
+  meal: string;
+  id: string;
+  name: string;
+}

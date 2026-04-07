@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { AuthManager } from './auth';
-import { FoodSearchResponse } from '../types';
+import { DiaryHistoryEntry, FoodSearchResponse } from '../types';
 
 export interface WebSearchResult {
   originalFoodId: string;
@@ -55,6 +55,46 @@ export class MFPWebClient {
       responseType: 'text',
     });
     return response.data;
+  }
+
+  async getDiaryEntries(date: string): Promise<DiaryHistoryEntry[]> {
+    const html = await this.fetchDiaryPage(date);
+    const $ = cheerio.load(html);
+    const entries: DiaryHistoryEntry[] = [];
+    let currentMeal = '';
+
+    $('#diary-table tr').each((_, row) => {
+      const tr = $(row);
+      const headerMeal = tr.find('td.first.alt').first().text().replace(/\s+/g, ' ').trim();
+      if (['Breakfast', 'Lunch', 'Dinner', 'Snacks'].includes(headerMeal)) {
+        currentMeal = headerMeal;
+        return;
+      }
+
+      const link = tr.find('a[data-food-entry-id]').first();
+      const id = (link.attr('data-food-entry-id') || '').trim();
+      const name = link.text().replace(/\s+/g, ' ').trim();
+      if (id && name && currentMeal) {
+        entries.push({ date, meal: currentMeal, id, name });
+      }
+    });
+
+    return entries;
+  }
+
+  async getRecentDiaryEntries(days: number, endDate: string): Promise<DiaryHistoryEntry[]> {
+    const entries: DiaryHistoryEntry[] = [];
+    const end = new Date(`${endDate}T00:00:00Z`);
+
+    for (let i = 0; i < days; i += 1) {
+      const date = new Date(end);
+      date.setUTCDate(end.getUTCDate() - i);
+      const dateString = date.toISOString().slice(0, 10);
+      const dayEntries = await this.getDiaryEntries(dateString);
+      entries.push(...dayEntries);
+    }
+
+    return entries;
   }
 
   async searchFoods(query: string, mealId: string, date: string): Promise<WebSearchResult[]> {

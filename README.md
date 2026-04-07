@@ -108,7 +108,8 @@ npm run dev -- search "coca cola" --limit 20
 ```bash
 npm run dev -- diary-add "biscoff" --meal snacks --qty 1
 npm run dev -- diary-add "chicken breast" --meal lunch --qty 2 --result 3
-npm run dev -- diary-remove 12619810555
+npm run dev -- diary-remove 12619810555 --date 2026-04-07
+npm run dev -- diary-frequent 14 --meal snacks
 ```
 
 ## 📊 Example Output
