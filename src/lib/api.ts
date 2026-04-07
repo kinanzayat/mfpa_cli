@@ -46,6 +46,33 @@ export class MFPApiClient {
     return await response.json() as T;
   }
 
+  private async apiWriteRequest<T>(path: string, method: 'POST' | 'PUT', body: unknown): Promise<T> {
+    const token = await this.authManager.getToken();
+    const userId = this.authManager.getUserId();
+
+    const response = await fetch(new URL(path, this.baseURL).toString(), {
+      method,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'mfp-client-id': 'mfp-main-js',
+        'mfp-user-id': userId,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.status === 401) {
+      throw new Error('Authentication failed. Your session may have expired. Run "mfp setup" again.');
+    }
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`API write request failed (${response.status}): ${errorBody}`);
+    }
+
+    return await response.json() as T;
+  }
+
   /**
    * Get diary data for a date or date range
    * For single dates, use entry_date param (from/to doesn't work reliably for single days)
@@ -68,6 +95,24 @@ export class MFPApiClient {
    */
   async getMeasurements(): Promise<MeasurementsResponse> {
     return this.apiRequest<MeasurementsResponse>('/v2/measurements');
+  }
+
+  /**
+   * Create a new weight measurement (or return existing same-day value if the API de-dupes)
+   */
+  async createMeasurement(value: number, unit: 'kilograms' | 'pounds', date: string): Promise<MeasurementsResponse> {
+    return this.apiWriteRequest<MeasurementsResponse>('/v2/measurements', 'POST', {
+      items: [{ type: 'Weight', value, unit, date }]
+    });
+  }
+
+  /**
+   * Update an existing weight measurement by date via bulk PUT
+   */
+  async updateMeasurement(value: number, unit: 'kilograms' | 'pounds', date: string): Promise<MeasurementsResponse> {
+    return this.apiWriteRequest<MeasurementsResponse>('/v2/measurements', 'PUT', {
+      items: [{ type: 'Weight', value, unit, date }]
+    });
   }
 
   /**

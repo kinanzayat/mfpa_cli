@@ -7,6 +7,8 @@ import { setupSummaryCommand } from './commands/summary';
 import { setupWeightCommand } from './commands/weight';
 import { setupWeekCommand } from './commands/week';
 import { setupSearchCommand } from './commands/search';
+import { setupDiaryAddCommand } from './commands/diary-add';
+import { setupDiaryRemoveCommand } from './commands/diary-remove';
 
 const program = new Command();
 
@@ -22,6 +24,8 @@ setupSummaryCommand(program);
 setupWeightCommand(program);
 setupWeekCommand(program);
 setupSearchCommand(program);
+setupDiaryAddCommand(program);
+setupDiaryRemoveCommand(program);
 
 // Add help examples
 program.on('--help', () => {
@@ -36,6 +40,8 @@ program.on('--help', () => {
   console.log('  $ mfp weight show              # All weight entries');
   console.log('  $ mfp weight log 70.5 kg       # Log new weight');
   console.log('  $ mfp search "chicken breast"  # Search for foods');
+  console.log('  $ mfp diary-add "biscoff" --meal snacks --qty 1   # Add food to diary');
+  console.log('  $ mfp diary-remove 12619810555                    # Remove diary entry');
   console.log('');
   console.log(chalk.cyan('Authentication:'));
   console.log('  Before using any commands, run "mfp setup" to configure your');

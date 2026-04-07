@@ -67,11 +67,23 @@ export interface MeasurementsResponse {
   total_entries: number;
 }
 
+export interface ServingSize {
+  id: string;
+  index: number;
+  nutrition_multiplier: number;
+  unit: string;
+  value: number;
+}
+
 export interface FoodItem {
   description: string;
   id: string;
   brand_name: string | null;
   nutritional_contents: NutritionalContents;
+  serving_sizes?: ServingSize[];
+  type?: string;
+  verified?: boolean;
+  version?: string;
 }
 
 export interface FoodSearchResponse {

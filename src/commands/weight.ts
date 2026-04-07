@@ -137,13 +137,29 @@ export function setupWeightCommand(program: Command): void {
         
         // Normalize unit
         const normalizedUnit = unit.toLowerCase() === 'lbs' || unit.toLowerCase() === 'pounds' ? 'pounds' : 'kilograms';
-        
-        console.log(chalk.yellow('⚠️  Weight logging via API is not yet implemented.'));
-        console.log('This feature requires testing the POST /v2/measurements endpoint.');
-        console.log(`Would log: ${weight} ${normalizedUnit} for today (${formatDate(new Date())})`);
-        
-        // TODO: Implement POST to /v2/measurements
-        // This requires testing the exact payload format and authentication
+        const targetDate = formatDate(new Date());
+
+        const authManager = new AuthManager();
+        authManager.loadConfig();
+
+        if (!authManager.loadConfig()) {
+          console.error(chalk.red('❌ No configuration found. Run "mfp setup" first.'));
+          process.exit(1);
+        }
+
+        const apiClient = new MFPApiClient(authManager);
+        const existing = await apiClient.getMeasurements();
+        const existingToday = existing.items.find(item => item.type === 'Weight' && item.date === targetDate);
+
+        const result = existingToday
+          ? await apiClient.updateMeasurement(weight, normalizedUnit, targetDate)
+          : await apiClient.createMeasurement(weight, normalizedUnit, targetDate);
+
+        const saved = result.items.find(item => item.type === 'Weight' && item.date === targetDate) || result.items[0];
+        console.log(chalk.green(`✅ Logged weight for ${targetDate}: ${saved.value} ${saved.unit}`));
+        if (saved.value !== weight) {
+          console.log(chalk.yellow(`ℹ️  MFP stored ${saved.value} instead of ${weight} (likely rounding by the platform).`));
+        }
         
       } catch (error: any) {
         console.error(chalk.red('❌ Error logging weight:'), error.message);

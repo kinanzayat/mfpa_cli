@@ -7,8 +7,9 @@ Unofficial MyFitnessPal CLI built from scratch using verified API endpoints. Acc
 - 📊 **Daily nutrition summaries** with goal tracking
 - 📖 **Detailed food diaries** showing individual items per meal
 - 📅 **Weekly nutrition overview** with trends
-- ⚖️ **Weight tracking** and history
+- ⚖️ **Weight tracking** and history (create + update)
 - 🔍 **Food search** in the MyFitnessPal database
+- ➕ **Diary food add/remove** through the authenticated web flow
 - 🎨 **Beautiful terminal output** with progress bars and colors
 - 📱 **JSON output** for automation and scripting
 
@@ -92,7 +93,7 @@ npm run dev -- week 2024-03-10        # Custom start date
 npm run dev -- weight                 # Latest weight entry
 npm run dev -- weight show            # All weight entries
 npm run dev -- weight show 2024-03-15 # Specific date
-npm run dev -- weight log 70.5 kg     # Log new weight (coming soon)
+npm run dev -- weight log 70.5 kg     # Log or update today's weight
 ```
 
 ### Food Search
@@ -100,6 +101,14 @@ npm run dev -- weight log 70.5 kg     # Log new weight (coming soon)
 ```bash
 npm run dev -- search "chicken breast"
 npm run dev -- search "coca cola" --limit 20
+```
+
+### Diary Mutations
+
+```bash
+npm run dev -- diary-add "biscoff" --meal snacks --qty 1
+npm run dev -- diary-add "chicken breast" --meal lunch --qty 2 --result 3
+npm run dev -- diary-remove 12619810555
 ```
 
 ## 📊 Example Output
@@ -156,10 +165,11 @@ DAILY TOTALS VS GOALS
 - `GET /v2/nutrition` - Food search
 - `GET /v2/users/{id}` - User profile
 
-**HTML Scraping (for missing data):**
+**HTML / Web flow (for missing data + mutations):**
 - Individual food items per meal
 - Daily nutrition goals
 - Food entry IDs
+- Add/remove food entries through the legacy authenticated web flow
 
 ### Authentication Flow
 1. User provides 3 browser cookies
@@ -212,8 +222,8 @@ All commands accept:
 
 ## 🎯 Future Features
 
-- [ ] Weight logging via API (POST /v2/measurements)
-- [ ] Food logging capabilities
+- [x] Weight logging via API (POST/PUT /v2/measurements)
+- [x] Food logging capabilities
 - [ ] Exercise data integration
 - [ ] Macro trend analysis
 - [ ] Export to CSV/JSON
@@ -222,8 +232,7 @@ All commands accept:
 
 ## ⚠️ Limitations
 
-- Weight logging not yet implemented (requires API testing)
-- Food entry creation not supported
+- Food logging depends on the legacy authenticated web flow and can break if MFP changes it
 - Exercise data requires different API scopes
 - Depends on MyFitnessPal's unofficial API stability
 
